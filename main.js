@@ -2190,8 +2190,8 @@ function initModalListeners() {
   document.addEventListener('click', handleModalOpen);
 
   window.modal.addEventListener('click', function(e) {
-    if (e.target === window.modal || e.target === window.modal.querySelector('[data-modal-container]')) closeModal();
-  });
+  if (!e.target.closest('.modal_card')) closeModal();
+});
 
   window.modal.querySelectorAll('[data-modal-close]').forEach(function(btn) {
     btn.addEventListener('click', closeModal);
