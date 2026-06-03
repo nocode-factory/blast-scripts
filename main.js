@@ -1169,7 +1169,7 @@ function initVimeoLightboxAdvanced() {
       player = new Vimeo.Player(iframe);
       setupPlayerEvents();
       currentVideoID = id;
-      await runSizing();
+      runSizing();
     }
 
     // Now sizing is ready — show lightbox
