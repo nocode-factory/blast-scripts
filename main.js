@@ -235,12 +235,7 @@ function animateElements() {
 // INIT
 // ============================================
 
-//animateElements();
-if ('requestIdleCallback' in window) {
-  requestIdleCallback(() => animateElements());
-} else {
-  animateElements();
-}
+animateElements();
 
 
 document.querySelectorAll('[gsap-trigger="click"]').forEach((trigger) => {
