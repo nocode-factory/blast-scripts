@@ -235,7 +235,12 @@ function animateElements() {
 // INIT
 // ============================================
 
-animateElements();
+//animateElements();
+if ('requestIdleCallback' in window) {
+  requestIdleCallback(() => animateElements());
+} else {
+  animateElements();
+}
 
 document.querySelectorAll('[gsap-trigger="click"]').forEach((trigger) => {
   trigger.addEventListener("click", function () {
@@ -581,7 +586,7 @@ function startRandomHighlight() {
     }, 4000);
   }
 
-  setInterval(checkVisibility, 100);
+  setInterval(checkVisibility, 250);
 
   setTimeout(() => {
     if (!applyRandomHighlightOnCurrentLine()) {
