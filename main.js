@@ -1084,10 +1084,10 @@ function initVimeoLightboxAdvanced() {
 
   // ── Logique play touch — appelée depuis openLightbox ET bouton play ──
   function touchFirstPlay() {
-    player.ready().then(() => {
-      player.setVolume(0).then(() => {
+  player.ready().then(() => {
+    player.setVolume(0).then(() => {
+      player.play().then(() => {
         lightbox.setAttribute("data-vimeo-playing", "true");
-        player.play();
         playedOnce.add(currentVideoID);
         if (!globalMuted) {
           setTimeout(() => {
@@ -1095,9 +1095,15 @@ function initVimeoLightboxAdvanced() {
             lightbox.setAttribute("data-vimeo-muted", "false");
           }, 100);
         }
+      }).catch(() => {
+        // iOS a bloqué le play — on remet la lightbox en état "prête"
+        // l'utilisateur voit le bouton play manuel, pas le spinner
+        lightbox.setAttribute("data-vimeo-loaded", "true");
+        lightbox.setAttribute("data-vimeo-playing", "false");
       });
     });
-  }
+  });
+}
 
   async function openLightbox(id, placeholderBtn) {
     lightbox.setAttribute("data-vimeo-activated", "loading");
