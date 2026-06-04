@@ -1186,18 +1186,19 @@ function initVimeoLightboxAdvanced() {
       // Sur mobile (isTouch), on lance la vidéo au premier clic
       if (!playedOnce.has(currentVideoID)) {
         // Pour que le navigateur accepte l'autoplay sur mobile, on doit souvent forcer le mute au lancement
-        player.setVolume(0).then(() => {
-          lightbox.setAttribute("data-vimeo-playing", "true");
-          player.play();
-          // On remet le son après un court instant si ce n'était pas muet globalement
-          if (!globalMuted) {
-            setTimeout(() => {
-              player.setVolume(1);
-              lightbox.setAttribute("data-vimeo-muted", "false");
-            }, 100);
-          }
-          playedOnce.add(currentVideoID);
-        });
+        player.ready().then(() => {
+  player.setVolume(0).then(() => {
+    lightbox.setAttribute("data-vimeo-playing", "true");
+    player.play();
+    if (!globalMuted) {
+      setTimeout(() => {
+        player.setVolume(1);
+        lightbox.setAttribute("data-vimeo-muted", "false");
+      }, 100);
+    }
+    playedOnce.add(currentVideoID);
+  });
+});
       } else {
         player.setVolume(globalMuted ? 0 : 1).then(() => {
           lightbox.setAttribute("data-vimeo-playing", "true");
