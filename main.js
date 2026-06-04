@@ -1356,7 +1356,7 @@ function initMobileTooltips() {
 }
 
 // Lancement au chargement du DOM
-document.addEventListener("DOMContentLoaded", initMobileTooltips);
+//document.addEventListener("DOMContentLoaded", initMobileTooltips);
 /* =========================
    ✅ MAP RENCONTRER CITY ROTATOR
    ========================= */
