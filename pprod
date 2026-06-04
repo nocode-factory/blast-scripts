@@ -1211,18 +1211,17 @@ if (!globalMuted) {
     () => {
       if (isTouch) {
         if (!playedOnce.has(currentVideoID)) {
-          player.setVolume(0).then(() => {
-            lightbox.setAttribute("data-vimeo-playing", "true");
-            player.play();
-            if (!globalMuted) {
-              setTimeout(() => {
-                player.setVolume(1);
-                lightbox.setAttribute("data-vimeo-muted", "false");
-              }, 100);
-            }
-            playedOnce.add(currentVideoID);
-          });
-        } else {
+  player.play();
+  player.setVolume(0);
+  lightbox.setAttribute("data-vimeo-playing", "true");
+  playedOnce.add(currentVideoID);
+  if (!globalMuted) {
+    setTimeout(() => {
+      player.setVolume(1);
+      lightbox.setAttribute("data-vimeo-muted", "false");
+    }, 100);
+  }
+} else {
           player.setVolume(globalMuted ? 0 : 1).then(() => {
             lightbox.setAttribute("data-vimeo-playing", "true");
             player.play();
