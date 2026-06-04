@@ -1135,7 +1135,7 @@ function initVimeoLightboxAdvanced() {
     }
 
     if (!player) {
-      iframe.src = `https://player.vimeo.com/video/${id}?api=1&background=1&autoplay=0&loop=0&muted=0`;
+      iframe.src = `https://player.vimeo.com/video/${id}?api=1&autoplay=0&loop=0&muted=0`;
       player = new Vimeo.Player(iframe);
       setupPlayerEvents();
       currentVideoID = id;
