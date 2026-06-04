@@ -1166,7 +1166,7 @@ function initVimeoLightboxAdvanced() {
     // Build a brand-new player if needed
     if (!player) {
       iframe.src =
-        `https://player.vimeo.com/video/${id}?api=1&autoplay=0&loop=0&muted=0`;
+        `https://player.vimeo.com/video/${id}?api=1&background=1&autoplay=0&loop=0&muted=0`;
       player = new Vimeo.Player(iframe);
       setupPlayerEvents();
       currentVideoID = id;
@@ -1186,16 +1186,18 @@ function initVimeoLightboxAdvanced() {
       // Sur mobile (isTouch), on lance la vidéo au premier clic
       if (!playedOnce.has(currentVideoID)) {
         // Pour que le navigateur accepte l'autoplay sur mobile, on doit souvent forcer le mute au lancement
-        player.play();
-player.setVolume(0);
-lightbox.setAttribute("data-vimeo-playing", "true");
-playedOnce.add(currentVideoID);
-if (!globalMuted) {
-  setTimeout(() => {
-    player.setVolume(1);
-    lightbox.setAttribute("data-vimeo-muted", "false");
-  }, 100);
-}
+        player.setVolume(0).then(() => {
+          lightbox.setAttribute("data-vimeo-playing", "true");
+          player.play();
+          // On remet le son après un court instant si ce n'était pas muet globalement
+          if (!globalMuted) {
+            setTimeout(() => {
+              player.setVolume(1);
+              lightbox.setAttribute("data-vimeo-muted", "false");
+            }, 100);
+          }
+          playedOnce.add(currentVideoID);
+        });
       } else {
         player.setVolume(globalMuted ? 0 : 1).then(() => {
           lightbox.setAttribute("data-vimeo-playing", "true");
@@ -1211,16 +1213,19 @@ if (!globalMuted) {
     () => {
       if (isTouch) {
         if (!playedOnce.has(currentVideoID)) {
-  player.play();
-  player.setVolume(0);
-  lightbox.setAttribute("data-vimeo-playing", "true");
-  playedOnce.add(currentVideoID);
-  if (!globalMuted) {
-    setTimeout(() => {
-      player.setVolume(1);
-      lightbox.setAttribute("data-vimeo-muted", "false");
-    }, 100);
-  }
+  player.ready().then(() => {
+    player.setVolume(0).then(() => {
+      lightbox.setAttribute("data-vimeo-playing", "true");
+      player.play();
+      if (!globalMuted) {
+        setTimeout(() => {
+          player.setVolume(1);
+          lightbox.setAttribute("data-vimeo-muted", "false");
+        }, 100);
+      }
+      playedOnce.add(currentVideoID);
+    });
+  });
 } else {
           player.setVolume(globalMuted ? 0 : 1).then(() => {
             lightbox.setAttribute("data-vimeo-playing", "true");
