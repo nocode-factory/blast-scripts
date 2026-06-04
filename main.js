@@ -1,5 +1,5 @@
 /* =========================
-   📆 UPDATE 03-06-2026
+   📆 UPDATE 04-06-2026
    ========================= */
 
 /* =========================
@@ -914,11 +914,9 @@ function initMagneticEffect() {
 
 /* ---------- Init Vimeo Lightbox ---------- */
 function initVimeoLightboxAdvanced() {
-  // Single lightbox container
   const lightbox = document.querySelector("[data-vimeo-lightbox-init]");
   if (!lightbox) return;
 
-  // Open & close buttons
   const openButtons = document.querySelectorAll(
     '[data-vimeo-lightbox-control="open"]',
   );
@@ -926,38 +924,31 @@ function initVimeoLightboxAdvanced() {
     '[data-vimeo-lightbox-control="close"]',
   );
 
-  // Core elements inside lightbox
-  let iframe = lightbox.querySelector("iframe"); // ← now let
+  let iframe = lightbox.querySelector("iframe");
   const placeholder = lightbox.querySelector(".vimeo-lightbox__placeholder");
   const calcEl = lightbox.querySelector(".vimeo-lightbox__calc");
   const wrapEl = lightbox.querySelector(".vimeo-lightbox__calc-wrap");
-  const playerContainer = lightbox.querySelector(
-    "[data-vimeo-lightbox-player]",
-  );
+  const playerContainer = lightbox.querySelector("[data-vimeo-lightbox-player]");
 
-  // State
   let player = null;
   let currentVideoID = null;
   let videoAspectRatio = null;
   let globalMuted = lightbox.getAttribute("data-vimeo-muted") === "true";
   const isTouch = ("ontouchstart" in window) || navigator.maxTouchPoints > 0;
-  const playedOnce = new Set(); // track first play on touch
+  const playedOnce = new Set();
 
-  // Format time (seconds → "m:ss")
   function formatTime(s) {
     const m = Math.floor(s / 60);
     const sec = Math.floor(s % 60).toString().padStart(2, "0");
     return `${m}:${sec}`;
   }
 
-  // Clamp wrap height
   function clampWrapSize(ar) {
     const w = calcEl.offsetWidth;
     const h = calcEl.offsetHeight;
     wrapEl.style.maxWidth = Math.min(w, h / ar) + "px";
   }
 
-  // Adjust sizing in "cover" mode
   function adjustCoverSizing() {
     if (!videoAspectRatio) return;
     const cH = playerContainer.offsetHeight;
@@ -973,7 +964,6 @@ function initVimeoLightboxAdvanced() {
     }
   }
 
-  // Close & pause lightbox
   function closeLightbox() {
     lightbox.setAttribute("data-vimeo-activated", "false");
     document.body.style.overflow = "";
@@ -983,51 +973,35 @@ function initVimeoLightboxAdvanced() {
     }
   }
 
-  // Wire Escape key & close buttons
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeLightbox();
   });
   closeButtons.forEach((btn) => btn.addEventListener("click", closeLightbox));
 
-  // Close when clicking outside the video
   lightbox.addEventListener("click", (e) => {
-    // Ignorer si le clic est sur le composant vidéo en lui-même (data-vimeo-lightbox-player)
     if (e.target.closest("[data-vimeo-lightbox-player]")) return;
-
-    // Ignorer si le clic est sur un bouton de contrôle (play/pause/timeline...)
     if (e.target.closest("[data-vimeo-control]")) return;
-
-    // Ignorer si le clic est sur une autre action interne (*à l'exception* de l'arrière-plan/fermeture).
-    // On vérifie que c'est un bouton "open" ou qu'on ne cible pas la classe background.
     if (
       e.target.closest('[data-vimeo-lightbox-control="open"]') ||
       (e.target.closest("[data-vimeo-lightbox-control]") &&
         !e.target.closest(".vimeo-lightbox__bg") &&
-        !e.target.closest('[data-vimeo-lightbox-control="close"]')) // Le bouton close ferme déjà seul, c'est optionnel
+        !e.target.closest('[data-vimeo-lightbox-control="close"]'))
     ) {
       return;
     }
-
-    // Sinon, on ferme.
     closeLightbox();
   });
 
-  // Setup Vimeo Player event handlers
   function setupPlayerEvents() {
-    // Hide placeholder when playback starts
     player.on("play", () => {
       lightbox.setAttribute("data-vimeo-loaded", "true");
       lightbox.setAttribute("data-vimeo-playing", "true");
     });
-    // Close on video end
     player.on("ended", closeLightbox);
-
-    // Paused
     player.on("pause", () => {
       lightbox.setAttribute("data-vimeo-playing", "false");
     });
 
-    // Duration UI
     const durEl = lightbox.querySelector("[data-vimeo-duration]");
     player.getDuration().then((d) => {
       if (durEl) durEl.textContent = formatTime(d);
@@ -1035,7 +1009,6 @@ function initVimeoLightboxAdvanced() {
         .forEach((el) => el.max = d);
     });
 
-    // Timeline & progress updates
     const tl = lightbox.querySelector('[data-vimeo-control="timeline"]');
     const pr = lightbox.querySelector("progress");
     player.on("timeupdate", (data) => {
@@ -1053,7 +1026,6 @@ function initVimeoLightboxAdvanced() {
       );
     }
 
-    // Hover → hide controls after a timeout
     let hoverTimer;
     playerContainer.addEventListener("mousemove", () => {
       lightbox.setAttribute("data-vimeo-hover", "true");
@@ -1063,7 +1035,6 @@ function initVimeoLightboxAdvanced() {
       }, 3000);
     });
 
-    // Fullscreen toggle on player container
     const fsBtn = lightbox.querySelector('[data-vimeo-control="fullscreen"]');
     if (fsBtn) {
       const isFS = () =>
@@ -1074,37 +1045,27 @@ function initVimeoLightboxAdvanced() {
       fsBtn.addEventListener("click", () => {
         if (isFS()) {
           lightbox.setAttribute("data-vimeo-fullscreen", "false");
-          (document.exitFullscreen || document.webkitExitFullscreen).call(
-            document,
-          );
+          (document.exitFullscreen || document.webkitExitFullscreen).call(document);
         } else {
           lightbox.setAttribute("data-vimeo-fullscreen", "true");
-          (playerContainer.requestFullscreen ||
-            playerContainer.webkitRequestFullscreen)
+          (playerContainer.requestFullscreen || playerContainer.webkitRequestFullscreen)
             .call(playerContainer);
         }
       });
       ["fullscreenchange", "webkitfullscreenchange"].forEach((evt) =>
-        document.addEventListener(
-          evt,
-          () =>
-            lightbox.setAttribute(
-              "data-vimeo-fullscreen",
-              isFS() ? "true" : "false",
-            ),
+        document.addEventListener(evt, () =>
+          lightbox.setAttribute("data-vimeo-fullscreen", isFS() ? "true" : "false")
         )
       );
     }
   }
 
-  // Run sizing logic
   async function runSizing() {
     const mode = lightbox.getAttribute("data-vimeo-update-size");
     const w = await player.getVideoWidth();
     const h = await player.getVideoHeight();
     const ar = h / w;
     const bef = lightbox.querySelector(".vimeo-lightbox__before");
-
     if (mode === "true") {
       if (bef) bef.style.paddingTop = (ar * 100) + "%";
       clampWrapSize(ar);
@@ -1117,24 +1078,36 @@ function initVimeoLightboxAdvanced() {
     }
   }
 
-  // Re-run sizing on viewport resize
   window.addEventListener("resize", () => {
     if (player) runSizing();
   });
 
-  // Open or switch video
+  // ── Logique play touch — appelée depuis openLightbox ET bouton play ──
+  function touchFirstPlay() {
+    player.ready().then(() => {
+      player.setVolume(0).then(() => {
+        lightbox.setAttribute("data-vimeo-playing", "true");
+        player.play();
+        playedOnce.add(currentVideoID);
+        if (!globalMuted) {
+          setTimeout(() => {
+            player.setVolume(1);
+            lightbox.setAttribute("data-vimeo-muted", "false");
+          }, 100);
+        }
+      });
+    });
+  }
+
   async function openLightbox(id, placeholderBtn) {
-    // Enter loading state immediately
     lightbox.setAttribute("data-vimeo-activated", "loading");
     document.body.style.overflow = "hidden";
     lightbox.setAttribute("data-vimeo-loaded", "false");
 
-    // — FULL RESET if new video ID —
     if (player && id !== currentVideoID) {
       await player.pause();
       await player.unload();
 
-      // Replace old iframe with a fresh one
       const oldIframe = iframe;
       const newIframe = document.createElement("iframe");
       newIframe.className = oldIframe.className;
@@ -1144,14 +1117,12 @@ function initVimeoLightboxAdvanced() {
       newIframe.setAttribute("allow", "autoplay; encrypted-media");
       oldIframe.parentNode.replaceChild(newIframe, oldIframe);
 
-      // Reset state
       iframe = newIframe;
       player = null;
       currentVideoID = null;
       lightbox.setAttribute("data-vimeo-playing", "false");
     }
 
-    // Update placeholder image attributes
     if (placeholderBtn) {
       ["src", "srcset", "sizes", "alt", "width"].forEach((attr) => {
         const val = placeholderBtn.getAttribute(attr);
@@ -1163,41 +1134,24 @@ function initVimeoLightboxAdvanced() {
       });
     }
 
-    // Build a brand-new player if needed
     if (!player) {
-      iframe.src =
-        `https://player.vimeo.com/video/${id}?api=1&background=1&autoplay=0&loop=0&muted=0`;
+      iframe.src = `https://player.vimeo.com/video/${id}?api=1&background=1&autoplay=0&loop=0&muted=0`;
       player = new Vimeo.Player(iframe);
       setupPlayerEvents();
       currentVideoID = id;
       runSizing();
     }
 
-    // Now sizing is ready — show lightbox
     lightbox.setAttribute("data-vimeo-activated", "true");
 
-    // Autoplay logic
     if (!isTouch) {
       player.setVolume(globalMuted ? 0 : 1).then(() => {
         lightbox.setAttribute("data-vimeo-playing", "true");
         setTimeout(() => player.play(), 50);
       });
     } else {
-      // Sur mobile (isTouch), on lance la vidéo au premier clic
       if (!playedOnce.has(currentVideoID)) {
-        // Pour que le navigateur accepte l'autoplay sur mobile, on doit souvent forcer le mute au lancement
-        player.setVolume(0).then(() => {
-          lightbox.setAttribute("data-vimeo-playing", "true");
-          player.play();
-          // On remet le son après un court instant si ce n'était pas muet globalement
-          if (!globalMuted) {
-            setTimeout(() => {
-              player.setVolume(1);
-              lightbox.setAttribute("data-vimeo-muted", "false");
-            }, 100);
-          }
-          playedOnce.add(currentVideoID);
-        });
+        touchFirstPlay();
       } else {
         player.setVolume(globalMuted ? 0 : 1).then(() => {
           lightbox.setAttribute("data-vimeo-playing", "true");
@@ -1207,72 +1161,43 @@ function initVimeoLightboxAdvanced() {
     }
   }
 
-  // Internal controls
-  lightbox.querySelector('[data-vimeo-control="play"]').addEventListener(
-    "click",
-    () => {
-      if (isTouch) {
-        if (!playedOnce.has(currentVideoID)) {
-          player.setVolume(0).then(() => {
-            lightbox.setAttribute("data-vimeo-playing", "true");
-            player.play();
-            if (!globalMuted) {
-              setTimeout(() => {
-                player.setVolume(1);
-                lightbox.setAttribute("data-vimeo-muted", "false");
-              }, 100);
-            }
-            playedOnce.add(currentVideoID);
-          });
-        } else {
-          player.setVolume(globalMuted ? 0 : 1).then(() => {
-            lightbox.setAttribute("data-vimeo-playing", "true");
-            player.play();
-          });
-        }
+  lightbox.querySelector('[data-vimeo-control="play"]').addEventListener("click", () => {
+    if (isTouch) {
+      if (!playedOnce.has(currentVideoID)) {
+        touchFirstPlay();
       } else {
         player.setVolume(globalMuted ? 0 : 1).then(() => {
           lightbox.setAttribute("data-vimeo-playing", "true");
-          setTimeout(() => player.play(), 50);
+          player.play();
         });
       }
-    },
-  );
+    } else {
+      player.setVolume(globalMuted ? 0 : 1).then(() => {
+        lightbox.setAttribute("data-vimeo-playing", "true");
+        setTimeout(() => player.play(), 50);
+      });
+    }
+  });
 
-  lightbox.querySelector('[data-vimeo-control="pause"]').addEventListener(
-    "click",
-    () => {
-      player.pause();
-    },
-  );
+  lightbox.querySelector('[data-vimeo-control="pause"]').addEventListener("click", () => {
+    player.pause();
+  });
 
-  lightbox.querySelector('[data-vimeo-control="mute"]').addEventListener(
-    "click",
-    () => {
-      globalMuted = !globalMuted;
-      player.setVolume(globalMuted ? 0 : 1).then(() =>
-        lightbox.setAttribute(
-          "data-vimeo-muted",
-          globalMuted ? "true" : "false",
-        )
-      );
-    },
-  );
+  lightbox.querySelector('[data-vimeo-control="mute"]').addEventListener("click", () => {
+    globalMuted = !globalMuted;
+    player.setVolume(globalMuted ? 0 : 1).then(() =>
+      lightbox.setAttribute("data-vimeo-muted", globalMuted ? "true" : "false")
+    );
+  });
 
-  // Wire up open buttons
   openButtons.forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const vid = btn.getAttribute("data-vimeo-lightbox-id");
-
-      // Si pas d'ID de vidéo (ex: CMS vide), on ne fait rien
       if (!vid || vid.trim() === "") {
         e.preventDefault();
-        console.warn(
-          "⚠️ [Vimeo Lightbox] Clic ignoré : aucun ID de vidéo trouvé pour cet item CMS.",
-        );
+        console.warn("⚠️ [Vimeo Lightbox] Clic ignoré : aucun ID de vidéo trouvé pour cet item CMS.");
         return;
       }
-
       const img = btn.querySelector("[data-vimeo-lightbox-placeholder]");
       console.log("--- Vimeo Lightbox Clicked ---");
       console.log("Video ID found:", vid);
