@@ -430,8 +430,6 @@ Les autres fonctions (`animateElements`, `initCardBlurTabs`, `initMagneticEffect
 
 Honnêtement, quelques dettes techniques à garder en tête :
 
-1. **Double init de `initMobileTooltips`** (DOMContentLoaded + `initPageScripts`) → garder un seul point d'entrée.
-2. **`MutationObserver` sur `document.body`** dans la modal → restreindre au conteneur Finsweet (`[fs-list-element="list"]`) pour réduire le coût mobile.
-3. **`console.log` de trace** encore présents (Tooltip, Vimeo) → à retirer en prod ou à passer derrière un flag debug.
-4. **Stratégie d'init éclatée** (immédiat / DOMContentLoaded / initPageScripts / window.load) → fonctionnelle mais difficile à suivre ; à terme, centraliser dans un seul orchestrateur conditionnel comme `initPageScripts`.
-5. Penser à **mettre à jour la date `📆 UPDATE`** et à bumper le tag jsDelivr (ou purger `@main`) à chaque déploiement.
+1. **`MutationObserver` sur `document.body`** dans la modal → restreindre au conteneur Finsweet (`[fs-list-element="list"]`) pour réduire le coût mobile.
+2. **`console.log` de trace** encore présents (Tooltip, Vimeo) → à retirer en prod ou à passer derrière un flag debug.
+3. **Stratégie d'init éclatée** (immédiat / DOMContentLoaded / initPageScripts / window.load) → fonctionnelle mais difficile à suivre ; à terme, centraliser dans un seul orchestrateur conditionnel comme `initPageScripts`.
