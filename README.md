@@ -63,11 +63,9 @@ L'init est **volontairement éclatée** selon les blocs — utile à comprendre 
 | Mécanisme de lancement | Blocs concernés |
 |---|---|
 | Exécuté **immédiatement** au parse | `animateElements()`, `autoTabsProgress()`, `autoTabsOpacity()` |
-| Sur `DOMContentLoaded` | Navbar mobile, `initCardBlurTabs`, `AutoRotateFakeTabs`, `startRandomHighlight` (+500 ms), `initMobileTooltips` |
+| Sur `DOMContentLoaded` | Navbar mobile, `initCardBlurTabs`, `AutoRotateFakeTabs`, `startRandomHighlight` (+500 ms) |
 | Via `initPageScripts()` (guard par présence d'un attribut) | `initMagneticEffect`, `initVimeoLightboxAdvanced`, `initParallaxLayers`, `initMapRotator`, `initTagsAnimateOnMap`, `initMobileTooltips` |
 | Sur `window.load` | `initModal()` (modal levées) |
-
-> ⚠️ **`initMobileTooltips` est attaché deux fois** : une fois sur `DOMContentLoaded` (en bas de son bloc) et une fois dans `initPageScripts()`. Sur une page contenant `[data-css-tooltip-hover]`, les listeners de clic sont donc posés en double. À nettoyer (garder un seul point d'init) — sans impact fonctionnel visible aujourd'hui, mais ce n'est pas une bonne pratique.
 
 ---
 
@@ -229,7 +227,6 @@ C'est le bloc le plus volumineux. Points clés :
 - Clics gérés : dans la bulle ouverte → ferme ; sur un trigger → ouvre/bascule ; ailleurs → ferme.
 
 > Contient des `console.log` de trace volontaires (🕒 / ✨ / 🚀…) utiles au debug.
-> ⚠️ Voir la note « double init » plus haut.
 
 ---
 
