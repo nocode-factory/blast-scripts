@@ -314,16 +314,12 @@ function Init_Swiper_2() {
       //"[Swiper 2] Adaptation de l'écran. Mode desktop ? " + e.matches,
       //);
       if (currentSwiper && !currentSwiper.destroyed) {
-        currentSwiper.destroy(true, true);
-      }
-      var currentDelay = e.matches ? speeds.desktop : speeds.mobile;
-      currentSwiper = new Swiper(sliderEl, buildConfig(e.matches));
-      setupSwiperPagination(currentSwiper, pagination, currentDelay);
-      //console.log(
-      //"[Swiper 2] Nouvelle instance Swiper créée avec succès",
-      //currentSwiper,
-      //);
-    };
+    currentSwiper.destroy(true, true);
+  }
+  var currentDelay = e.matches ? speeds.desktop : speeds.mobile;
+  currentSwiper = new Swiper(sliderEl, buildConfig(e.matches));
+  setupSwiperPagination(currentSwiper, pagination, currentDelay);
+};
 
     mql.addEventListener("change", updateSwiper);
     updateSwiper(mql);
