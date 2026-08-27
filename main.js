@@ -1,3 +1,4 @@
+console.log("test");
 /* =========================
    ✅ GESTION TYPEFORM (laisser en haut)
    ========================= */
